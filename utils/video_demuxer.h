@@ -278,6 +278,9 @@ class VideoDemuxer {
                         std::cerr << "ERROR::Invalid seek criteria" << std::endl;
                         return -1;
                 }
+                if(target_ts > stream_duration_) {
+                    throw std::runtime_error("ERROR: seeking for timestamp exceeds video duration");
+                }
 
                 if (pkt_dts_ == target_ts) {
                     return 0;
@@ -395,11 +398,12 @@ class VideoDemuxer {
             height_ = av_fmt_input_ctx_->streams[av_stream_]->codecpar->height;
             chroma_format_ = (AVPixelFormat)av_fmt_input_ctx_->streams[av_stream_]->codecpar->format;
             bit_rate_ = av_fmt_input_ctx_->streams[av_stream_]->codecpar->bit_rate;
+            if (av_fmt_input_ctx_->streams[av_stream_]->duration != AV_NOPTS_VALUE)
+                stream_duration_ = av_fmt_input_ctx_->streams[av_stream_]->duration;
             if (av_fmt_input_ctx_->streams[av_stream_]->r_frame_rate.den != 0)
                 frame_rate_ = static_cast<double>(av_fmt_input_ctx_->streams[av_stream_]->r_frame_rate.num) / static_cast<double>(av_fmt_input_ctx_->streams[av_stream_]->r_frame_rate.den);
             if (av_fmt_input_ctx_->streams[av_stream_]->avg_frame_rate.den != 0)
                 avg_frame_rate_ = static_cast<double>(av_fmt_input_ctx_->streams[av_stream_]->avg_frame_rate.num) / static_cast<double>(av_fmt_input_ctx_->streams[av_stream_]->avg_frame_rate.den);
-
             switch (chroma_format_) {
                 case AV_PIX_FMT_YUV420P10LE:
                 case AV_PIX_FMT_GRAY10LE:
@@ -562,6 +566,7 @@ class VideoDemuxer {
         // used for Seek Exact frame
         int64_t pkt_dts_ = 0;
         int64_t pkt_duration_ = 0;
+        int64_t stream_duration_;
 };
 
 static inline rocDecVideoCodec AVCodec2RocDecVideoCodec(AVCodecID av_codec) {
