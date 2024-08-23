@@ -36,6 +36,15 @@ THE SOFTWARE.
 #include <cstring>
 #include <unordered_map>
 #include <chrono>
+
+#include <mutex>
+#include <condition_variable>
+#include <queue>
+#include <tuple>
+#include <thread>
+#include <functional>
+
+
 #include <hip/hip_runtime.h>
 extern "C" {
 #include "libavutil/md5.h"
@@ -511,4 +520,22 @@ class RocVideoDecoder {
         uint32_t extra_output_file_count_ = 0;
         std::thread::id decoder_session_id_; // Decoder session identifier. Used to gather session level stats.
         std::unordered_map<std::thread::id, double> session_overhead_; // Records session overhead of initialization+deinitialization time. Format is (thread id, duration)
+};
+
+class RocDecThreadPool {
+    public:
+        RocDecThreadPool(int nthreads);
+        ~RocDecThreadPool();
+
+        void JoinThreads();
+
+        void ExecuteJob(std::function<void()> &func);
+    protected:
+        void ThreadEntry(int i);
+
+        std::mutex mutex_;
+        std::condition_variable cond_var_;
+        bool shutdown_;
+        std::queue<std::function<void()>> decode_jobs_queue_;
+        std::vector<std::thread> threads_;
 };

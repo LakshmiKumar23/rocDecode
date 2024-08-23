@@ -1189,3 +1189,70 @@ bool RocVideoDecoder::CodecSupported(int device_id, rocDecVideoCodec codec_id, u
     }
     return true;
 }
+
+RocDecThreadPool::RocDecThreadPool (int nthreads) : shutdown_(false)  {
+    
+    // Create the specified number of threads
+    threads_.reserve(nthreads);
+    for (int i = 0; i < nthreads; ++i)
+        threads_.emplace_back(std::bind(&RocDecThreadPool::ThreadEntry, this, i));
+}
+
+RocDecThreadPool::~RocDecThreadPool () {}
+
+void RocDecThreadPool::JoinThreads () {
+    std::cout <<" rocDecode: In join threads before locking muxtex!" << std::endl;
+    {
+        // Unblock any threads and tell them to stop
+        std::unique_lock<std::mutex> lock(mutex_);
+        std::cout << " rocDecode: before settign shutdown_ -- " << shutdown_ << std::endl;
+        shutdown_ = true;
+        std::cout << " rocDecode: after settign shutdown_ -- " << shutdown_ << std::endl;
+        cond_var_.notify_all();
+    }
+    std::cout <<" rocDecode: In join threads after locking muxtex!" << std::endl;
+    // Wait for all threads to stop
+    for (auto& thread : threads_){
+        std::cout <<" rocDecode: In join threads..!" << std::hex << thread.get_id() << std::endl;
+        if(thread.joinable()) {
+            thread.join();
+        }
+        else {
+            std::cout <<" rocDecode: Not joinable..!" << thread.get_id() << std::endl;
+        }
+        std::cout <<" rocDecode: In join threads..2!" << std::endl;
+        }
+    
+}
+
+void RocDecThreadPool::ExecuteJob (std::function<void()> &func) {
+    std::cout <<" rocDecode: In execute job before locking muxtex!" << std::endl;
+    // Place a job on the queue and unblock a thread
+    std::unique_lock<std::mutex> lock(mutex_);
+    std::cout <<" rocDecode: In execute job after locking muxtex!" << std::endl;
+    decode_jobs_queue_.emplace(std::move(func));
+    std::cout <<" rocDecode: In execute job after queuing the job!" << std::endl;
+    cond_var_.notify_one();
+}
+
+void RocDecThreadPool::ThreadEntry (int i) {
+    std::function<void()> execute_decode_job;
+
+    while (true) {
+        {
+            std::unique_lock<std::mutex> lock(mutex_);
+            cond_var_.wait(lock, [&] {return shutdown_ || !decode_jobs_queue_.empty();});
+            if (decode_jobs_queue_.empty() || shutdown_) {
+                // No jobs to do; shutting down
+                std::cout << " rocDecode: returning from while loop" << std::endl;
+                return;
+            }
+
+            execute_decode_job = std::move(decode_jobs_queue_.front());
+            decode_jobs_queue_.pop();
+        }
+
+        // Execute the decode job without holding any locks
+        execute_decode_job();
+    }
+}
