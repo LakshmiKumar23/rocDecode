@@ -138,6 +138,10 @@ rocDecStatus VaapiVideoDecoder::SubmitDecode(RocdecPicParams *pPicParams) {
                     ERR("HEVC data_buffer parameter_size not matching vaapi parameter buffer size.");
                     return ROCDEC_RUNTIME_ERROR;
             }
+
+                // Debug info dump
+                VAPictureParameterBufferHEVC *va_hevc_buffer = static_cast<VAPictureParameterBufferHEVC>(pPicParams->pic_params.hevc);
+                DumpHevcPicParams(va_hevc_buffer);
             break;
         }
 
