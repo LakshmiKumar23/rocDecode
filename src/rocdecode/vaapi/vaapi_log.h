@@ -28,10 +28,10 @@ THE SOFTWARE.
 #include <va/va_dec_vp9.h>
 #include <va/va_dec_av1.h>
 
-static void PrintAv1PicParams(VADecPictureParameterBufferAV1 *p_pic_param);
-static void DumpAvcPicParams(VAPictureParameterBufferH264 *p_pic_params);
-static void DumpAvcSliceParam(VASliceParameterBufferH264 *p_slice_param);
-static void PrintVp9PicParams(VADecPictureParameterBufferVP9 *p_pic_param);
-static void PrintVp9STileInfo(VASliceParameterBufferVP9 *p_tile_param);
-static void DumpHevcPicParams(VAPictureParameterBufferHEVC *p_pic_params);
-static void DumpHevcSliceParams(VASliceParameterBufferHEVC *p_slice_param);
+void PrintAv1PicParams(VADecPictureParameterBufferAV1 *p_pic_param);
+void DumpAvcPicParams(VAPictureParameterBufferH264 *p_pic_params);
+void DumpAvcSliceParam(VASliceParameterBufferH264 *p_slice_param);
+void PrintVp9PicParams(VADecPictureParameterBufferVP9 *p_pic_param);
+void PrintVp9STileInfo(VASliceParameterBufferVP9 *p_tile_param);
+void DumpHevcPicParams(VAPictureParameterBufferHEVC *p_pic_params);
+void DumpHevcSliceParams(VASliceParameterBufferHEVC *p_slice_param);

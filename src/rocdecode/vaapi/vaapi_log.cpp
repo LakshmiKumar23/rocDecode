@@ -22,7 +22,7 @@ THE SOFTWARE.
 
 #include "vaapi_log.h"
 
-static void PrintAv1PicParams(VADecPictureParameterBufferAV1 *p_pic_param) {
+void PrintAv1PicParams(VADecPictureParameterBufferAV1 *p_pic_param) {
     /*int i, j;
     printf("=======================\n");
     printf("Picture parameter Info:\n");
@@ -251,7 +251,7 @@ static void PrintAv1PicParams(VADecPictureParameterBufferAV1 *p_pic_param) {
     }*/
 }
 
-static void DumpAvcPicParams(VAPictureParameterBufferH264 *p_pic_params) {
+void DumpAvcPicParams(VAPictureParameterBufferH264 *p_pic_params) {
     printf("================================\n");
     printf("VAPictureParameterBufferH264:\n");
 
@@ -301,7 +301,7 @@ static void DumpAvcPicParams(VAPictureParameterBufferH264 *p_pic_params) {
     printf("\n");
 }
 
-static void DumpAvcSliceParam(VASliceParameterBufferH264 *p_slice_param) {
+void DumpAvcSliceParam(VASliceParameterBufferH264 *p_slice_param) {
     printf("================================\n");
     printf("VASliceParameterBufferH264:\n");
     printf("slice_data_size = %d\n", p_slice_param->slice_data_size);
@@ -377,7 +377,7 @@ static void DumpAvcSliceParam(VASliceParameterBufferH264 *p_slice_param) {
     printf("\n");
 }
 
-static void PrintVp9PicParams(VADecPictureParameterBufferVP9 *p_pic_param) {
+void PrintVp9PicParams(VADecPictureParameterBufferVP9 *p_pic_param) {
     int i;
 
     printf("=======================\n");
@@ -432,7 +432,7 @@ static void PrintVp9PicParams(VADecPictureParameterBufferVP9 *p_pic_param) {
     printf("bit_depth = %d\n", (p_pic_param->bit_depth));
 }
 
-static void PrintVp9STileInfo(VASliceParameterBufferVP9 *p_tile_param) {
+void PrintVp9STileInfo(VASliceParameterBufferVP9 *p_tile_param) {
     printf("=======================\n");
     printf("Tile parameter Info: \n");
     printf("=======================\n");
@@ -458,7 +458,7 @@ static void PrintVp9STileInfo(VASliceParameterBufferVP9 *p_tile_param) {
     }
 }
 
-static void DumpHevcPicParams(VAPictureParameterBufferHEVC *p_pic_params) {
+void DumpHevcPicParams(VAPictureParameterBufferHEVC *p_pic_params) {
     printf("================================\n");
     printf("VAPictureParameterBufferHEVC:\n");
 
@@ -553,7 +553,7 @@ static void DumpHevcPicParams(VAPictureParameterBufferHEVC *p_pic_params) {
     printf("\n");
 }
 
-static void DumpHevcSliceParams(VASliceParameterBufferHEVC *p_slice_param) {
+void DumpHevcSliceParams(VASliceParameterBufferHEVC *p_slice_param) {
     printf("================================\n");
     printf("VASliceParameterBufferHEVC:\n");
 
