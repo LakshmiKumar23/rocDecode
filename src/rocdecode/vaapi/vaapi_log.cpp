@@ -23,7 +23,7 @@ THE SOFTWARE.
 #include "vaapi_log.h"
 
 static void PrintAv1PicParams(VADecPictureParameterBufferAV1 *p_pic_param) {
-    int i, j;
+    /*int i, j;
     printf("=======================\n");
     printf("Picture parameter Info:\n");
     printf("=======================\n");
@@ -248,7 +248,7 @@ static void PrintAv1PicParams(VADecPictureParameterBufferAV1 *p_pic_param) {
             printf(" %d", p_pic_param->wm[i - 1].wmmat[j]);
         }
         printf("\n");
-    }
+    }*/
 }
 
 static void DumpAvcPicParams(VAPictureParameterBufferH264 *p_pic_params) {
@@ -494,11 +494,11 @@ static void DumpHevcPicParams(VAPictureParameterBufferHEVC *p_pic_params) {
     printf("num_tile_rows_minus1 = %d\n", p_pic_params->num_tile_rows_minus1);
 
     for (int i = 0; i < 19; i++) {
-        printf("    %d: column_width_minus1 = %d\n", i, column_width_minus1[i]);
+        printf("    %d: column_width_minus1 = %d\n", i, p_pic_params->column_width_minus1[i]);
     }
 
     for (int i = 0; i < 21; i++) {
-        printf("    %d: row_height_minus1 = %d\n", i, row_height_minus1[i]);
+        printf("    %d: row_height_minus1 = %d\n", i, p_pic_params->row_height_minus1[i]);
     }
 
     printf("log2_max_pic_order_cnt_lsb_minus4 = %d\n", p_pic_params->log2_max_pic_order_cnt_lsb_minus4);

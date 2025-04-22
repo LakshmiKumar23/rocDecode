@@ -140,7 +140,7 @@ rocDecStatus VaapiVideoDecoder::SubmitDecode(RocdecPicParams *pPicParams) {
             }
 
                 // Debug info dump
-                VAPictureParameterBufferHEVC *va_hevc_buffer = static_cast<VAPictureParameterBufferHEVC>(pPicParams->pic_params.hevc);
+                VAPictureParameterBufferHEVC *va_hevc_buffer = reinterpret_cast<VAPictureParameterBufferHEVC *>(&pPicParams->pic_params.hevc);
                 DumpHevcPicParams(va_hevc_buffer);
             break;
         }
