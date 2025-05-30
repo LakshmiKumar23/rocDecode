@@ -57,6 +57,15 @@ rocDecStatus HevcVideoParser::UnInitialize() {
 
 rocDecStatus HevcVideoParser::ParseVideoData(RocdecSourceDataPacket *p_data) {
     if (p_data->payload && p_data->payload_size) {
+
+        /*FILE *fptr;
+        char buf[100];
+        snprintf(buf, sizeof(buf), "payload_%d.bin", pic_count_);
+        fptr = fopen(buf, "wb");
+        fwrite(p_data->payload, sizeof(uint8_t), p_data->payload_size/sizeof(uint8_t) , fptr);
+        fclose(fptr);
+        */
+
         curr_pts_ = p_data->pts;
         if (ParsePictureData(p_data->payload, p_data->payload_size) != PARSER_OK) {
             ERR(STR("Parser failed!"));
@@ -110,6 +119,7 @@ rocDecStatus HevcVideoParser::ParseVideoData(RocdecSourceDataPacket *p_data) {
 }
 
 int HevcVideoParser::FillSeqCallbackFn(HevcSeqParamSet* sps_data) {
+    std::cout << "new seq callback for hevc parser" << std::endl;
     video_format_params_.codec = rocDecVideoCodec_HEVC;
     video_format_params_.frame_rate.numerator = frame_rate_.numerator;
     video_format_params_.frame_rate.denominator = frame_rate_.denominator;
