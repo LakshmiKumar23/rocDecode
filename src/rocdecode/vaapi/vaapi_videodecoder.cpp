@@ -292,9 +292,6 @@ rocDecStatus VaapiVideoDecoder::GetDecodeStatus(int pic_idx, RocdecDecodeStatus 
         case VASurfaceReady:
             decode_status->decode_status = rocDecodeStatus_Success;
             break;
-        case VASurfaceDisplaying:
-            decode_status->decode_status = rocDecodeStatus_Displaying;
-            break;
         default:
            decode_status->decode_status = rocDecodeStatus_Invalid;
     }
@@ -318,11 +315,7 @@ rocDecStatus VaapiVideoDecoder::SyncSurface(int pic_idx) {
     if (pic_idx >= va_surface_ids_.size()) {
         return ROCDEC_INVALID_PARAMETER;
     }
-    VASurfaceStatus surface_status;
-    CHECK_VAAPI(vaQuerySurfaceStatus(va_display_, va_surface_ids_[pic_idx], &surface_status));
-    if (surface_status != VASurfaceReady) {
-        CHECK_VAAPI(vaSyncSurface(va_display_, va_surface_ids_[pic_idx]));
-    }
+    CHECK_VAAPI(vaSyncSurface(va_display_, va_surface_ids_[pic_idx]));
     return ROCDEC_SUCCESS;
 }
 
