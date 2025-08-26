@@ -409,7 +409,14 @@ rocDecStatus VaapiVideoDecoder::CreateDecoderConfig() {
             }
             break;
         case rocDecVideoCodec_AV1:
-            va_profile_ = VAProfileAV1Profile0;
+#if VA_CHECK_VERSION(1, 23, 0)
+            if (decoder_create_info_.bit_depth_minus_8 == 4) {
+                va_profile_ = VAProfileAV1Profile2;
+            } else
+#endif
+            {
+                va_profile_ = VAProfileAV1Profile0;
+            }
             break;
         default:
             ERR("The codec type is not supported.");
@@ -663,7 +670,14 @@ rocDecStatus VaContext::CheckDecCapForCodecType(RocdecDecodeCaps *dec_cap) {
             break;
         }
         case rocDecVideoCodec_AV1: {
-            va_profile = VAProfileAV1Profile0;
+#if VA_CHECK_VERSION(1, 23, 0)
+            if (dec_cap->bit_depth_minus_8 == 4) {
+                va_profile = VAProfileAV1Profile2;
+            } else
+#endif
+            {
+                va_profile = VAProfileAV1Profile0;
+            }
             break;
         }
         default: {
