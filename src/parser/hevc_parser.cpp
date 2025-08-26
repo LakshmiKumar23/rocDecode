@@ -57,16 +57,26 @@ rocDecStatus HevcVideoParser::UnInitialize() {
 
 rocDecStatus HevcVideoParser::ParseVideoData(RocdecSourceDataPacket *p_data) {
     if (p_data->payload && p_data->payload_size) {
+<<<<<<< HEAD
       std::cout << "pic_count_ = " << pic_count_ << " p_data->payload_size = "<< p_data->payload_size << std::endl;
       	/*
         FILE *fptr;
+=======
+
+        /*FILE *fptr;
+>>>>>>> ce647555e07430fd2706ccc76f68487986ce9e30
         char buf[100];
         snprintf(buf, sizeof(buf), "payload_%d.bin", pic_count_);
         fptr = fopen(buf, "wb");
         fwrite(p_data->payload, sizeof(uint8_t), p_data->payload_size/sizeof(uint8_t) , fptr);
         fclose(fptr);
         */
+<<<<<<< HEAD
     	  curr_pts_ = p_data->pts;
+=======
+
+        curr_pts_ = p_data->pts;
+>>>>>>> ce647555e07430fd2706ccc76f68487986ce9e30
         if (ParsePictureData(p_data->payload, p_data->payload_size) != PARSER_OK) {
             ERR(STR("Parser failed!"));
             return ROCDEC_RUNTIME_ERROR;
@@ -119,6 +129,7 @@ rocDecStatus HevcVideoParser::ParseVideoData(RocdecSourceDataPacket *p_data) {
 }
 
 int HevcVideoParser::FillSeqCallbackFn(HevcSeqParamSet* sps_data) {
+    std::cout << "new seq callback for hevc parser" << std::endl;
     video_format_params_.codec = rocDecVideoCodec_HEVC;
     video_format_params_.frame_rate.numerator = frame_rate_.numerator;
     video_format_params_.frame_rate.denominator = frame_rate_.denominator;
@@ -197,10 +208,13 @@ int HevcVideoParser::FillSeqCallbackFn(HevcSeqParamSet* sps_data) {
     int disp_width = (video_format_params_.display_area.right - video_format_params_.display_area.left) * sar.numerator;
     int disp_height = (video_format_params_.display_area.bottom - video_format_params_.display_area.top) * sar.denominator;
     int gcd = std::__gcd(disp_width, disp_height); // greatest common divisor
-    video_format_params_.display_aspect_ratio.x = disp_width / gcd;
-    video_format_params_.display_aspect_ratio.y = disp_height / gcd;
+    if (gcd) {
+        video_format_params_.display_aspect_ratio.x = disp_width / gcd;
+        video_format_params_.display_aspect_ratio.y = disp_height / gcd;
+    }
 
     video_format_params_.reconfig_options = ROCDEC_RECONFIG_NEW_SURFACES;
+    video_format_params_.video_signal_description = {0};
     if (sps_data->vui_parameters_present_flag) {
         video_format_params_.video_signal_description.video_format = sps_data->vui_parameters.video_format;
         video_format_params_.video_signal_description.video_full_range_flag = sps_data->vui_parameters.video_full_range_flag;
