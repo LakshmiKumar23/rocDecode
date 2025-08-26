@@ -98,12 +98,15 @@ ParserResult RocVideoParser::OutputDecodedPictures(bool no_delay) {
     RocdecParserDispInfo disp_info = {0};
     disp_info.progressive_frame = 1; // not used
     disp_info.top_field_first = 1; // not used
+    static int count = 0;
 
     int disp_delay = no_delay ? 0 : parser_params_.max_display_delay;
     if (num_output_pics_ > disp_delay) {
         int num_disp = num_output_pics_ - disp_delay;
         for (int i = 0; i < num_disp; i++) {
             disp_info.picture_index = output_pic_list_[i];
+            std::cout << "Debug -- picture oder count = " <<  decode_buffer_pool_[output_pic_list_[i]].pic_order_cnt << ", picture index = "
+                        << disp_info.picture_index << " , count = " << count++  << std::endl;
             disp_info.pts = decode_buffer_pool_[output_pic_list_[i]].pts;
             pfn_display_picture_cb_(parser_params_.user_data, &disp_info);
             decode_buffer_pool_[output_pic_list_[i]].use_status &= ~kFrameUsedForDisplay;

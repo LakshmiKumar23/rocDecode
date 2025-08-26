@@ -762,6 +762,8 @@ int RocVideoDecoder::HandlePictureDisplay(RocdecParserDispInfo *pDispInfo) {
                     HIP_API_CALL(hipMemcpyDtoDAsync(p_dec_frame, p_src_ptr_y, luma_size, hip_stream_));
                 } else {
                     // use 2d copy to copy an ROI
+                    std::cout << "luma: in else condition 1\n";
+                    std::cout << "src_pitch[0] - " << src_pitch[0] << " dst_pitch - " << dst_pitch << " disp_height_ - " << disp_height_ << std::endl;
                     HIP_API_CALL(hipMemcpy2DAsync(p_dec_frame, dst_pitch, p_src_ptr_y, src_pitch[0], dst_pitch, disp_height_, hipMemcpyDeviceToDevice, hip_stream_));
                 }
             } else
@@ -777,6 +779,8 @@ int RocVideoDecoder::HandlePictureDisplay(RocdecParserDispInfo *pDispInfo) {
                     int chroma_size = chroma_height_ * dst_pitch;
                     HIP_API_CALL(hipMemcpyDtoDAsync(p_frame_uv, p_src_ptr_uv, chroma_size, hip_stream_));
                 } else {
+                    std::cout << "chroma: in else condition 1\n";
+                    std::cout << "src_pitch[1] - " << src_pitch[1] << " dst_pitch - " << dst_pitch << " chroma_height_ - " << chroma_height_ << std::endl;
                     // use 2d copy to copy an ROI
                     HIP_API_CALL(hipMemcpy2DAsync(p_frame_uv, dst_pitch, p_src_ptr_uv, src_pitch[1], dst_pitch, chroma_height_, hipMemcpyDeviceToDevice, hip_stream_));
                 }
@@ -857,6 +861,7 @@ int RocVideoDecoder::DecodeFrame(const uint8_t *data, size_t size, int pkt_flags
     packet.payload_size = size;
     packet.flags = pkt_flags | ROCDEC_PKT_TIMESTAMP;
     packet.pts = pts;
+    std::cout << "packet.pts = " << packet.pts << std::endl;
     if (!data || size == 0) {
         packet.flags |= ROCDEC_PKT_ENDOFSTREAM;
     }
@@ -874,9 +879,11 @@ uint8_t* RocVideoDecoder::GetFrame(int64_t *pts) {
         if (out_mem_type_ == OUT_SURFACE_MEM_DEV_INTERNAL && !vp_frames_q_.empty()) {
             DecFrameBuffer *fb = &vp_frames_q_.front();
             if (pts) *pts = fb->pts;
+            std::cout <<"pts from getframe1 = " << *pts << std::endl;
             return fb->frame_ptr;
         } else if (vp_frames_.size() > 0){
             if (pts) *pts = vp_frames_[output_frame_cnt_ret_].pts;
+            std::cout <<"pts from getframe2 = " << *pts << std::endl;
             return vp_frames_[output_frame_cnt_ret_++].frame_ptr;
         }
     }

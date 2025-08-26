@@ -139,11 +139,10 @@ rocDecStatus VaapiVideoDecoder::SubmitDecode(RocdecPicParams *pPicParams) {
                     return ROCDEC_RUNTIME_ERROR;
             }
 
-                // Debug info dump
-                VAPictureParameterBufferHEVC *va_hevc_buffer = reinterpret_cast<VAPictureParameterBufferHEVC *>(&pPicParams->pic_params.hevc);
-                DumpHevcPicParams(va_hevc_buffer);
-                VASliceParameterBufferHEVC *va_slice_hevc_buffer = reinterpret_cast<VASliceParameterBufferHEVC *>(&pPicParams->slice_params.hevc);
-                DumpHevcSliceParams(va_slice_hevc_buffer);
+            // Debug info dump
+            DumpHevcPicParams(static_cast<VAPictureParameterBufferHEVC *>(pic_params_ptr));
+            DumpHevcSliceParams(static_cast<VASliceParameterBufferHEVC *>(slice_params_ptr));
+            
             break;
         }
 
@@ -327,6 +326,7 @@ rocDecStatus VaapiVideoDecoder::SyncSurface(int pic_idx) {
 }
 
 rocDecStatus VaapiVideoDecoder::ReconfigureDecoder(RocdecReconfigureDecoderInfo *reconfig_params) {
+std::cout << "calling recofnigDecoder from VAAPI layer\n";
     if (reconfig_params == nullptr) {
         return ROCDEC_INVALID_PARAMETER;
     }
