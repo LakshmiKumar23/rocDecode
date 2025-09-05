@@ -519,10 +519,17 @@ int ROCDECAPI handle_picture_display(void* user_data, RocdecParserDispInfo* disp
     void* dev_mem_ptr[3] = { 0 };
     uint32_t pitch[3] = { 0 };
     CHECK(rocDecGetVideoFrame(p_dec_info->decoder, disp_info->picture_index, dev_mem_ptr, pitch, &params));
-
-    if (p_dec_info->dump_decoded_frames) {
-        save_frame_to_file(p_dec_info, dev_mem_ptr, pitch);
+    std::cout << "disp_info->picture_index -- " << disp_info->picture_index << std::endl;
+    uint8_t* host_buffer = new uint8_t[1000];  // Allocate a buffer for demonstration
+    hipError_t error = hipMemcpy(host_buffer, dev_mem_ptr[0], 1000, hipMemcpyDeviceToHost);
+    for (int i=0; i<100; i++) {
+        std::cout << (int)host_buffer[i] << " ";
     }
+    std::cout << std::endl;
+    delete[] host_buffer;  // Free the allocated buffer
+    /*if (p_dec_info->dump_decoded_frames) {
+        save_frame_to_file(p_dec_info, dev_mem_ptr, pitch);
+    }*/
     return 1;
 }
 

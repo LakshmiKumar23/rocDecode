@@ -462,7 +462,8 @@ class VideoDemuxer {
                         || !strcmp(av_fmt_input_ctx_->iformat->long_name, "Matroska / WebM"));
 
             // Check if the input file allow seek functionality.
-            is_seekable_ = av_fmt_input_ctx_->iformat->read_seek || av_fmt_input_ctx_->iformat->read_seek2;
+            //is_seekable_ = av_fmt_input_ctx_->iformat->read_seek || av_fmt_input_ctx_->iformat->read_seek2;
+            is_seekable_ = true;
 
             if (is_h264_) {
                 const AVBitStreamFilter *bsf = av_bsf_get_by_name("h264_mp4toannexb");

@@ -993,6 +993,7 @@ void RocVideoDecoder::SaveFrameToFile(std::string output_file_name, void *surf_m
             int img_height = surf_info->output_height;
             int output_stride =  surf_info->output_pitch;
             if (img_width * surf_info->bytes_per_pixel == output_stride && img_height == surf_info->output_vstride) {
+                std::cout << "in if condition to dump, output_stride - " << output_stride << " surf_info->output_vstride - "<< surf_info->output_vstride << std::endl;;
                 fwrite(hst_ptr, 1, output_image_size, fp_out_);
             } else {
                 uint32_t width = surf_info->output_width * surf_info->bytes_per_pixel;
