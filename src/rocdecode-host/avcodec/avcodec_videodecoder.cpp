@@ -341,7 +341,8 @@ int AvcodecVideoDecoder::DecodeAvFrame(AVPacket *av_pkt, AVFrame *p_frame) {
     //send packet to av_codec
     status = avcodec_send_packet(dec_context_, av_pkt);
     if (status < 0) {
-        ERR("Error sending av packet for decoding: status: ");
+        if (av_pkt->data && av_pkt->size)
+            ERR("Error sending av packet for decoding: status: ");
         return status;
     }
     while (status >= 0) {
@@ -386,8 +387,9 @@ rocDecStatus AvcodecVideoDecoder::NotifyNewSequence(AVFrame *p_frame) {
     p_video_format->frame_rate.denominator = dec_context_->framerate.den;
     p_video_format->bit_depth_luma_minus8 = BitDepthFromPixelFormat(dec_context_->pix_fmt) - 8;
     p_video_format->bit_depth_chroma_minus8 = p_video_format->bit_depth_luma_minus8;
-    p_video_format->progressive_sequence = 0; //!p_frame->interlaced_frame;
-    p_video_format->min_num_decode_surfaces = dec_context_->delay + dec_context_->max_b_frames;
+    p_video_format->progressive_sequence = !p_frame->interlaced_frame;
+    //number of decode surfaces are internal and not exposed in avcodec based decoding. Setting some value for sanity
+    p_video_format->min_num_decode_surfaces = dec_frames_.size();
     p_video_format->coded_width = p_frame->linesize[0];
     p_video_format->coded_height = p_frame->height;
     p_video_format->chroma_format = AVPixelFormat2rocDecVideoChromaFormat(dec_context_->pix_fmt);

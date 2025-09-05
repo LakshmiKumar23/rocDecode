@@ -139,11 +139,18 @@ rocDecStatus VaapiVideoDecoder::SubmitDecode(RocdecPicParams *pPicParams) {
                     return ROCDEC_RUNTIME_ERROR;
             }
 
+<<<<<<< HEAD
+            // Debug info dump
+            DumpHevcPicParams(static_cast<VAPictureParameterBufferHEVC *>(pic_params_ptr));
+            DumpHevcSliceParams(static_cast<VASliceParameterBufferHEVC *>(slice_params_ptr));
+            
+=======
                 // Debug info dump
                 /*
                 DumpHevcPicParams(static_cast<VAPictureParameterBufferHEVC *>(pic_params_ptr));
                 DumpHevcSliceParams(static_cast<VASliceParameterBufferHEVC *>(slice_params_ptr));
                 */
+>>>>>>> ce647555e07430fd2706ccc76f68487986ce9e30
             break;
         }
 
@@ -320,6 +327,7 @@ rocDecStatus VaapiVideoDecoder::SyncSurface(int pic_idx) {
 }
 
 rocDecStatus VaapiVideoDecoder::ReconfigureDecoder(RocdecReconfigureDecoderInfo *reconfig_params) {
+std::cout << "calling recofnigDecoder from VAAPI layer\n";
     if (reconfig_params == nullptr) {
         return ROCDEC_INVALID_PARAMETER;
     }
@@ -401,7 +409,14 @@ rocDecStatus VaapiVideoDecoder::CreateDecoderConfig() {
             }
             break;
         case rocDecVideoCodec_AV1:
-            va_profile_ = VAProfileAV1Profile0;
+#if VA_CHECK_VERSION(1, 23, 0)
+            if (decoder_create_info_.bit_depth_minus_8 == 4) {
+                va_profile_ = VAProfileAV1Profile2;
+            } else
+#endif
+            {
+                va_profile_ = VAProfileAV1Profile0;
+            }
             break;
         default:
             ERR("The codec type is not supported.");
@@ -655,7 +670,14 @@ rocDecStatus VaContext::CheckDecCapForCodecType(RocdecDecodeCaps *dec_cap) {
             break;
         }
         case rocDecVideoCodec_AV1: {
-            va_profile = VAProfileAV1Profile0;
+#if VA_CHECK_VERSION(1, 23, 0)
+            if (dec_cap->bit_depth_minus_8 == 4) {
+                va_profile = VAProfileAV1Profile2;
+            } else
+#endif
+            {
+                va_profile = VAProfileAV1Profile0;
+            }
             break;
         }
         default: {

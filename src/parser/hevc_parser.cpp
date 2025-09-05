@@ -57,16 +57,26 @@ rocDecStatus HevcVideoParser::UnInitialize() {
 
 rocDecStatus HevcVideoParser::ParseVideoData(RocdecSourceDataPacket *p_data) {
     if (p_data->payload && p_data->payload_size) {
+<<<<<<< HEAD
+      std::cout << "pic_count_ = " << pic_count_ << " p_data->payload_size = "<< p_data->payload_size << std::endl;
+      	/*
+        FILE *fptr;
+=======
 
         /*FILE *fptr;
+>>>>>>> ce647555e07430fd2706ccc76f68487986ce9e30
         char buf[100];
         snprintf(buf, sizeof(buf), "payload_%d.bin", pic_count_);
         fptr = fopen(buf, "wb");
         fwrite(p_data->payload, sizeof(uint8_t), p_data->payload_size/sizeof(uint8_t) , fptr);
         fclose(fptr);
         */
+<<<<<<< HEAD
+    	  curr_pts_ = p_data->pts;
+=======
 
         curr_pts_ = p_data->pts;
+>>>>>>> ce647555e07430fd2706ccc76f68487986ce9e30
         if (ParsePictureData(p_data->payload, p_data->payload_size) != PARSER_OK) {
             ERR(STR("Parser failed!"));
             return ROCDEC_RUNTIME_ERROR;
@@ -216,6 +226,8 @@ int HevcVideoParser::FillSeqCallbackFn(HevcSeqParamSet* sps_data) {
     video_format_params_.seqhdr_data_length = 0;
 
     // callback function with RocdecVideoFormat params filled out
+    printf("video_format_params_.min_num_decode_surfaces from rocDecode -- %d\n", video_format_params_.min_num_decode_surfaces);
+    std::cout << "dec_buf_pool_size_ from rocDecode -- " <<  dec_buf_pool_size_ << std::endl;
     if (pfn_sequence_cb_(parser_params_.user_data, &video_format_params_) == 0) {
         ERR("Sequence callback function failed.");
         return PARSER_FAIL;
@@ -235,7 +247,9 @@ void HevcVideoParser::SendSeiMsgPayload() {
 }
 
 int HevcVideoParser::SendPicForDecode() {
-    int i, j, ref_idx, buf_idx;
+    //static int count = 0;
+    //printf("calling SendPicForDecode - %d\n", count++);
+	  int i, j, ref_idx, buf_idx;
     HevcSeqParamSet *sps_ptr = &sps_list_[active_sps_id_];
     HevcPicParamSet *pps_ptr = &pps_list_[active_pps_id_];
     dec_pic_params_ = {0};
@@ -2316,6 +2330,7 @@ int HevcVideoParser::FlushDpb() {
             return PARSER_FAIL;
         }
     }
+    printf("num_output_pics -- %d\n", num_output_pics_);
     if (pfn_display_picture_cb_ && num_output_pics_ > 0) {
         if (OutputDecodedPictures(true) != PARSER_OK) {
             return PARSER_FAIL;
@@ -2501,7 +2516,7 @@ int HevcVideoParser::BumpPicFromDpb() {
             return PARSER_OUT_OF_RANGE;
         } else {
             output_pic_list_[num_output_pics_] = dpb_buffer_.frame_buffer_list[min_poc_pic_idx].dec_buf_idx;
-            num_output_pics_++;
+	          num_output_pics_++;
         }
     }
 
